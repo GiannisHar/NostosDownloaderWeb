@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nostos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f5f0;
+      --grey-dark: #1a1a1a;
+      --grey-mid: #2e2e2e;
+      --grey-light: #888;
+      --blue: #2563eb;
+      --blue-glow: rgba(37, 99, 235, 0.35);
+      --blue-dim: rgba(37, 99, 235, 0.12);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Blue accent line top ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--blue);
+      box-shadow: 0 0 18px var(--blue-glow);
+      z-index: 100;
+    }
+
+    /* ══════════════════ LAYOUT ══════════════════ */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px 80px;
+    }
+
+    /* ══════════════════ HEADER ══════════════════ */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 14vw, 140px);
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: var(--white);
+      /* Blue tint on the stroke */
+      -webkit-text-stroke: 1px rgba(37,99,235,0.3);
+      position: relative;
+    }
+
+    .logo span {
+      /* Subtle blue first letter */
+      color: var(--blue);
+      -webkit-text-stroke: 0px;
+    }
+
+    .tagline {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+    }
+
+    /* ══════════════════ CARD ══════════════════ */
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--grey-dark);
+      border: 1px solid #272727;
+      border-radius: 4px;
+      padding: 48px 40px;
+      animation: fadeUp 0.8s 0.15s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Blue left stripe */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 2px;
+      background: var(--blue);
+      box-shadow: 0 0 12px var(--blue-glow);
+    }
+
+    .card-section {
+      margin-bottom: 40px;
+    }
+    .card-section:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 18px;
+    }
+
+    /* ══════════════════ WEB APP LINK ══════════════════ */
+
+    /*
+    ╔══════════════════════════════════════╗
+    ║   WEB APP LINK — update href below   ║
+    ╚══════════════════════════════════════╝
+    Replace "#" with your web app URL, e.g.:
+      href="https://app.nostos.io"
+    */
+    .btn-webapp {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 16px 20px;
+      background: var(--blue);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .btn-webapp:hover {
+      background: #1d4ed8;
+      box-shadow: 0 0 22px var(--blue-glow);
+      transform: translateY(-1px);
+    }
+    .btn-webapp:active { transform: translateY(0); }
+
+    /* ══════════════════ DOWNLOAD BUTTONS ══════════════════ */
+
+    /*
+    ╔══════════════════════════════════════════════════════════════╗
+    ║   WINDOWS DOWNLOAD                                           ║
+    ║   Place your Windows release folder/files in your server     ║
+    ║   and update href below, e.g.:                               ║
+    ║     href="./downloads/windows/NostosSetup.exe"               ║
+    ╚══════════════════════════════════════════════════════════════╝
+    */
+    .btn-download {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px 20px;
+      background: transparent;
+      color: var(--white);
+      text-decoration: none;
+      border: 1px solid #333;
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      margin-bottom: 12px;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .btn-download:last-child { margin-bottom: 0; }
+
+    .btn-download:hover {
+      border-color: var(--blue);
+      background: var(--blue-dim);
+      transform: translateY(-1px);
+    }
+    .btn-download:active { transform: translateY(0); }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      fill: var(--grey-light);
+      transition: fill 0.2s;
+    }
+    .btn-download:hover .btn-icon,
+    .btn-webapp .btn-icon { fill: #fff; }
+    .btn-webapp .btn-icon { fill: rgba(255,255,255,0.85); }
+
+    .btn-text { flex: 1; }
+    .btn-title { display: block; font-size: 14px; font-weight: 500; }
+    .btn-sub   { display: block; font-size: 11px; color: var(--grey-light); margin-top: 2px; }
+
+    .btn-badge {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      border: 1px solid #333;
+      border-radius: 2px;
+      padding: 3px 7px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-download:hover .btn-badge {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* ══════════════════ DIVIDER ══════════════════ */
+    .divider {
+      height: 1px;
+      background: #222;
+      margin: 36px 0;
+    }
+
+    /* ══════════════════ FOOTER ══════════════════ */
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #444;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    footer strong {
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* ══════════════════ ANIMATIONS ══════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════ RESPONSIVE ══════════════════ */
+    @media (max-width: 480px) {
+      .card { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ══ HEADER ══ -->
+    <header>
+      <div class="logo"><span>N</span>ostos</div>
+      <p class="tagline">Made by NGASoft</p>
+    </header>
+
+    <!-- ══ MAIN CARD ══ -->
+    <div class="card">
+
+      <!-- Web App Section -->
+      <div class="card-section">
+        <p class="section-label">Web Application</p>
+
+        <!--
+        ╔══════════════════════════════════════╗
+        ║   WEB APP LINK                        ║
+        ║   Replace href="#" with your URL      ║
+        ╚══════════════════════════════════════╝
+        -->
+        <a href="https://nostos-web.vercel.app/" class="btn-webapp">
+          <svg class="btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+          <span class="btn-text">
+            <span class="btn-title">Open Web App</span>
+            <span class="btn-sub">Launch Nostos in your browser</span>
+          </span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(255,255,255,0.5)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 5l7 7-7 7M3 12h18" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Downloads Section -->
+      <div class="card-section">
+        <p class="section-label">Downloads</p>
+
+        <!--
+        ╔══════════════════════════════════════════════════════════════╗
+        ║   WINDOWS RELEASE                                            ║
+        ║   Put your Windows installer/exe inside:                     ║
+        ║     ./downloads/windows/                                     ║
+        ║   Then update href to match the filename, e.g.:              ║
+        ║     href="./downloads/windows/NostosSetup.exe"               ║
+        ╚══════════════════════════════════════════════════════════════╝
+        -->
+        <a href="Nostos.zip" class="btn-download" download>
+          <svg class="btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 5.557L10.12 4.6v7.08H3V5.557zM10.772 4.516L21 3v8.68h-10.228V4.516zM3 12.32h7.12v7.043L3 18.406V12.32zm7.772.36H21v8.637l-10.228-1.43V12.68z"/>
+          </svg>
+          <span class="btn-text">
+            <span class="btn-title">Windows</span>
+            <span class="btn-sub">Desktop installer (.exe)</span>
+          </span>
+          <span class="btn-badge">Download</span>
+        </a>
+
+        <!--
+        ╔══════════════════════════════════════════════════════════════╗
+        ║   ANDROID APK                                                ║
+        ║   Put your APK file inside:                                  ║
+        ║     ./downloads/android/                                     ║
+        ║   Then update href to match the filename, e.g.:              ║
+        ║     href="./downloads/android/Nostos.apk"                    ║
+        ╚══════════════════════════════════════════════════════════════╝
+        -->
+        <a href="Nostos.apk" class="btn-download" download>
+          <svg class="btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.523 15.341l1.046-1.812a.25.25 0 00-.433-.25l-1.059 1.834A6.476 6.476 0 0112 14.25a6.476 6.476 0 01-5.077 2.863L5.864 13.28a.25.25 0 00-.433.25l1.046 1.812A7.5 7.5 0 003.5 22h17a7.5 7.5 0 00-2.977-6.659zM8.5 8.5a1 1 0 110-2 1 1 0 010 2zm7 0a1 1 0 110-2 1 1 0 010 2zM7.386 4.146l-1.5-2.598a.25.25 0 00-.433.25l1.514 2.622A7.45 7.45 0 0012 3.5a7.45 7.45 0 005.033 1.92l1.514-2.622a.25.25 0 00-.433-.25l-1.5 2.598A7.5 7.5 0 004.5 11.5h15a7.5 7.5 0 00-12.114-7.354z"/>
+          </svg>
+          <span class="btn-text">
+            <span class="btn-title">Android</span>
+            <span class="btn-sub">APK package (.apk)</span>
+          </span>
+          <span class="btn-badge">Download</span>
+        </a>
+      </div>
+
+    </div><!-- /card -->
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      &copy; <strong>NGASoft</strong> &mdash; All rights reserved
+    </footer>
+
+  </div>
+</body>
+</html>
