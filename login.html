@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGA Nostos - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav id="toplist">
+        <li onclick="window.location.href='index.html'">Home</li>
+        <li onclick="window.location.href='login.html'">Products</li>
+        <li onclick="window.location.href='about.html'">About</li>
+    </nav>
+
+    <div class="topdivers">
+        <img class="logo" src="Nostos_Logo.png" alt="Nostos App Logo" onclick="window.location.href='index.html'">
+        <h1>NGA Nostos</h1>
+    </div>
+
+    <div class="diver">
+        <h1>NGA Nostos</h1>
+        <main>
+            <div class="login-form">
+                <p>User / Groom ID</p>
+                <input type="text" id="loginId" required placeholder="Enter your ID">
+                <p>Password</p>
+                <input type="password" id="loginPassword" required placeholder="Enter your password">
+                <div id="errorMsg" class="error-msg"></div>
+                <button id="loginBtn" class="submit-btn" onclick="handleLogin()">Login</button>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>NGASoft &copy; All Rights Reserved</p>
+    </footer>
+
+    <!-- Socket.IO client -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <script>
+        // ─── CONFIG ──────────────────────────────────────────
+        const SERVER_URL = "https://YOUR_SERVER_HOST:5000"; // <-- CHANGE THIS
+        // ─────────────────────────────────────────────────────
+
+        // If already logged in, redirect to lobby
+        if (sessionStorage.getItem("nostos_user")) {
+            window.location.href = "lobby.html";
+        }
+
+        const socket = io(SERVER_URL, {
+            transports: ["websocket"],
+            autoConnect: true
+        });
+
+        socket.on("connect", () => {
+            console.log("Connected to server:", socket.id);
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err);
+            document.getElementById("errorMsg").textContent = "Could not connect to server.";
+        });
+
+        // Listen for the login response
+        socket.on("loginweb_response", (data) => {
+            const errorMsg = document.getElementById("errorMsg");
+            const loginBtn = document.getElementById("loginBtn");
+
+            if (data.success) {
+                sessionStorage.setItem("nostos_user", JSON.stringify({
+                    id: data.id,
+                    name: data.name,
+                    job: data.job
+                }));
+                window.location.href = "lobby.html";
+            } else {
+                if (data.reason === "rate_limited") {
+                    errorMsg.textContent = "Too many attempts. Please wait a moment.";
+                } else {
+                    errorMsg.textContent = "Invalid ID or password.";
+                }
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Login";
+            }
+        });
+
+        function handleLogin() {
+            const id = document.getElementById("loginId").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const errorMsg = document.getElementById("errorMsg");
+            const loginBtn = document.getElementById("loginBtn");
+
+            errorMsg.textContent = "";
+
+            if (!id || !password) {
+                errorMsg.textContent = "Please fill in both fields.";
+                return;
+            }
+
+            if (!socket.connected) {
+                errorMsg.textContent = "Not connected to server. Please wait...";
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = "Logging in...";
+
+            socket.emit("loginweb", {
+                id: id,
+                password: password
+            });
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                handleLogin();
+            }
+        });
+    </script>
+
+</body>
+</html>
