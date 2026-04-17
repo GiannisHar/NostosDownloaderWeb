@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGA Nostos - Contact</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<script src="nav.js"></script>
+
+<div class="diver">
+<h1>Contact Us</h1>
+
+<main>
+<div class="login-form">
+<p>Name <input type="text" id="contactName" required></p>
+<p>Email <input type="text" id="contactEmail" required></p>
+<p>Subject <input type="text" id="contactSubject" required></p>
+<p>Message</p>
+<textarea id="contactMessage" required></textarea>
+<div id="statusMsg" class="status-msg"></div>
+<input type="submit" value="Send" id="sendBtn" onclick="handleSend()">
+</div>
+</main>
+
+</div>
+
+</body>
+
+<footer>
+NGASoft All Rights Reserved
+</footer>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────
+const SERVER_URL = "https://YOUR_SERVER_HOST:5000"; // <-- CHANGE THIS
+// ─────────────────────────────────────────────────────
+
+const socket = io(SERVER_URL, {
+    transports: ["websocket"],
+    autoConnect: true
+});
+
+socket.on("connect", () => {
+    console.log("Connected to server:", socket.id);
+});
+
+socket.on("connect_error", (err) => {
+    console.error("Connection error:", err);
+    document.getElementById("statusMsg").textContent = "Could not connect to server.";
+    document.getElementById("statusMsg").className = "status-msg status-error";
+});
+
+socket.on("contact_response", (data) => {
+    const statusMsg = document.getElementById("statusMsg");
+    const sendBtn = document.getElementById("sendBtn");
+
+    if (data.success) {
+        statusMsg.textContent = "Message sent successfully!";
+        statusMsg.className = "status-msg status-success";
+        document.getElementById("contactName").value = "";
+        document.getElementById("contactEmail").value = "";
+        document.getElementById("contactSubject").value = "";
+        document.getElementById("contactMessage").value = "";
+    } else {
+        if (data.reason === "rate_limited") {
+            statusMsg.textContent = "Too many messages. Please wait a moment.";
+        } else {
+            statusMsg.textContent = "Failed to send. Please try again.";
+        }
+        statusMsg.className = "status-msg status-error";
+    }
+
+    sendBtn.disabled = false;
+    sendBtn.value = "Send";
+});
+
+function handleSend() {
+    const name = document.getElementById("contactName").value.trim();
+    const email = document.getElementById("contactEmail").value.trim();
+    const subject = document.getElementById("contactSubject").value.trim();
+    const message = document.getElementById("contactMessage").value.trim();
+    const statusMsg = document.getElementById("statusMsg");
+    const sendBtn = document.getElementById("sendBtn");
+
+    statusMsg.textContent = "";
+    statusMsg.className = "status-msg";
+
+    if (!name || !email || !subject || !message) {
+        statusMsg.textContent = "Please fill in all fields.";
+        statusMsg.className = "status-msg status-error";
+        return;
+    }
+
+    if (!socket.connected) {
+        statusMsg.textContent = "Not connected to server. Please wait...";
+        statusMsg.className = "status-msg status-error";
+        return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.value = "Sending...";
+
+    socket.emit("contact_form", {
+        name: name,
+        email: email,
+        subject: subject,
+        message: message
+    });
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && e.ctrlKey) {
+        handleSend();
+    }
+});
+</script>
+
+</html>
