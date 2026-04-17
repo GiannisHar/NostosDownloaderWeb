@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGA Nostos - Contact</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<script src="nav.js"></script>
+
+<div class="diver">
+<h1>Contact Us</h1>
+
+<main>
+<div class="login-form">
+<p>Name <input type="text" id="contactName" required></p>
+<p>Email <input type="text" id="contactEmail" required></p>
+<p>Subject <input type="text" id="contactSubject" required></p>
+<p>Message</p>
+<textarea id="contactMessage" required></textarea>
+<div id="statusMsg" class="status-msg"></div>
+<input type="submit" value="Send" id="sendBtn" onclick="handleSend()">
+</div>
+</main>
+
+</div>
+
+</body>
+
+<footer>
+NGASoft All Rights Reserved
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+// ─── EMAILJS CONFIG ──────────────────────────────────
+// 1. Go to https://www.emailjs.com/ and create a free account
+// 2. Add an Email Service (Gmail) and get your SERVICE_ID
+// 3. Create an Email Template with variables: {{from_name}}, {{from_email}}, {{subject}}, {{message}}
+//    Set the template's "To Email" to example@gmail.com
+// 4. Get your PUBLIC_KEY from Account > API Keys
+// 5. Replace the three values below:
+
+const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";       // <-- CHANGE THIS
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";       // <-- CHANGE THIS
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";     // <-- CHANGE THIS
+// ─────────────────────────────────────────────────────
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+function handleSend() {
+    const name = document.getElementById("contactName").value.trim();
+    const email = document.getElementById("contactEmail").value.trim();
+    const subject = document.getElementById("contactSubject").value.trim();
+    const message = document.getElementById("contactMessage").value.trim();
+    const statusMsg = document.getElementById("statusMsg");
+    const sendBtn = document.getElementById("sendBtn");
+
+    statusMsg.textContent = "";
+    statusMsg.className = "status-msg";
+
+    if (!name || !email || !subject || !message) {
+        statusMsg.textContent = "Please fill in all fields.";
+        statusMsg.classList.add("status-error");
+        return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.value = "Sending...";
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        from_email: email,
+        subject: subject,
+        message: message
+    }).then(function() {
+        statusMsg.textContent = "Message sent successfully!";
+        statusMsg.classList.add("status-success");
+        document.getElementById("contactName").value = "";
+        document.getElementById("contactEmail").value = "";
+        document.getElementById("contactSubject").value = "";
+        document.getElementById("contactMessage").value = "";
+        sendBtn.disabled = false;
+        sendBtn.value = "Send";
+    }, function(error) {
+        console.error("EmailJS error:", error);
+        statusMsg.textContent = "Failed to send. Please try again.";
+        statusMsg.classList.add("status-error");
+        sendBtn.disabled = false;
+        sendBtn.value = "Send";
+    });
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && e.ctrlKey) {
+        handleSend();
+    }
+});
+</script>
+
+</html>
