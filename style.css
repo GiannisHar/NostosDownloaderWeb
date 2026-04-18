@@ -44,7 +44,7 @@ body {
 .topbar {
     width: 100%;
     padding: 0 36px;
-    height: 72px;
+    height: 100px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -56,12 +56,12 @@ body {
 }
 
 .topbar-logo {
-    height: 42px;
+    height: 60px;
     width: auto;
 }
 
 .topbar-title {
-    font-size: 20px;
+    font-size: 26px;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.3px;
