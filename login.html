@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGA Nostos — Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <img class="topbar-logo" src="Nostos_Logo.png" alt="Nostos" style="cursor:pointer;" onclick="window.location.href='index.html'">
+    <span class="topbar-title" style="cursor:pointer;" onclick="window.location.href='index.html'">NGA <span class="topbar-accent">Nostos</span></span>
+</header>
+
+<div class="page">
+    <div class="card login-card">
+        <h1 class="card-title">Sign In</h1>
+        <p class="card-subtitle">Log in to download the application.</p>
+
+        <div class="form-group">
+            <label class="form-label" for="loginId">User / Groom ID</label>
+            <input class="form-input" type="text" id="loginId" placeholder="Enter your ID" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input class="form-input" type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <button class="btn-login" id="loginBtn" onclick="handleLogin()">Login</button>
+
+        <p class="members-note">Access is restricted to authorized resort staff only.</p>
+
+        <a class="back-link" href="index.html">&larr; Back to downloads</a>
+    </div>
+</div>
+
+<footer class="footer">
+    NGASoft &middot; All Rights Reserved
+</footer>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────
+const SERVER_URL = "https://YOUR_SERVER_HOST:5000"; // <-- CHANGE THIS
+// ─────────────────────────────────────────────────────
+
+// If already logged in, go straight back to lobby
+(function() {
+    try {
+        const stored = sessionStorage.getItem("nostos_user");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.id && parsed.token) {
+                window.location.href = "index.html";
+                return;
+            }
+        }
+    } catch(e) {
+        sessionStorage.removeItem("nostos_user");
+    }
+})();
+
+// ─── SOCKET ──────────────────────────────────────────
+const socket = io(SERVER_URL, {
+    transports: ["websocket"],
+    autoConnect: true
+});
+
+socket.on("connect", () => {
+    console.log("Connected:", socket.id);
+});
+
+socket.on("connect_error", () => {
+    document.getElementById("errorMsg").textContent = "Could not connect to server.";
+    document.getElementById("loginBtn").disabled = false;
+    document.getElementById("loginBtn").textContent = "Login";
+});
+
+socket.on("loginweb_response", (data) => {
+    const errorMsg = document.getElementById("errorMsg");
+    const loginBtn = document.getElementById("loginBtn");
+
+    if (data.success && data.token) {
+        sessionStorage.setItem("nostos_user", JSON.stringify({
+            id: data.id,
+            name: data.name,
+            job: data.job,
+            token: data.token
+        }));
+        // Go back to lobby (which will auto-trigger pending download)
+        window.location.href = "index.html";
+    } else if (data.success && !data.token) {
+        errorMsg.textContent = "Login succeeded but no token received. Contact admin.";
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+    } else {
+        errorMsg.textContent = data.reason === "rate_limited"
+            ? "Too many attempts. Please wait a moment."
+            : "Invalid ID or password.";
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+    }
+});
+
+// ─── LOGIN ───────────────────────────────────────────
+function handleLogin() {
+    const id = document.getElementById("loginId").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const errorMsg = document.getElementById("errorMsg");
+    const loginBtn = document.getElementById("loginBtn");
+
+    errorMsg.textContent = "";
+
+    if (!id || !password) {
+        errorMsg.textContent = "Please fill in both fields.";
+        return;
+    }
+
+    if (!socket.connected) {
+        errorMsg.textContent = "Not connected to server. Please wait...";
+        return;
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
+
+    socket.emit("loginweb", { id: id, password: password });
+}
+
+// ─── ENTER KEY ───────────────────────────────────────
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleLogin();
+});
+</script>
+
+</body>
+</html>
