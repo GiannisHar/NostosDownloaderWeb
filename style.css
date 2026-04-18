@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --orange: #e8841a;
+    --orange-hover: #d4760f;
+    --orange-active: #bf6a0a;
+    --orange-light: rgba(232, 132, 26, 0.06);
+    --white: #ffffff;
+    --off-white: #f8f8f8;
+    --glass: rgba(255, 255, 255, 0.78);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --glass-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06);
+    --text: #111111;
+    --text-secondary: #555555;
+    --text-muted: #999999;
+    --border: #e2e2e2;
+    --border-hover: #d0d0d0;
+    --border-focus: var(--orange);
+    --danger: #d94444;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-xs: 8px;
+    --ease: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f2f2f2;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── TOP BAR ───────────────────────────────────── */
+
+.topbar {
+    width: 100%;
+    padding: 0 36px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-logo {
+    height: 42px;
+    width: auto;
+}
+
+.topbar-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+}
+
+.topbar-accent {
+    color: var(--orange);
+}
+
+/* ── PAGE ──────────────────────────────────────── */
+
+.page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px 32px;
+}
+
+/* ── CARD ──────────────────────────────────────── */
+
+.card {
+    background: var(--glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-shadow);
+    padding: 44px 40px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.card-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+/* ── DOWNLOAD BUTTONS ──────────────────────────── */
+
+.downloads {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.dl-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 20px;
+    height: 52px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all var(--ease);
+    text-align: left;
+}
+
+.dl-btn:hover {
+    border-color: var(--border-hover);
+    background: var(--off-white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.dl-btn:active {
+    background: #f0f0f0;
+}
+
+.dl-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--orange-light);
+}
+
+.dl-icon svg {
+    width: 18px;
+    height: 18px;
+    color: var(--orange);
+    stroke: var(--orange);
+    fill: none;
+}
+
+.dl-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.dl-label-main {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.dl-label-sub {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+.dl-arrow {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: transform var(--ease), color var(--ease);
+}
+
+.dl-btn:hover .dl-arrow {
+    transform: translateX(2px);
+    color: var(--orange);
+}
+
+.dl-arrow svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+}
+
+/* ── USER BAR ──────────────────────────────────── */
+
+.user-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.user-bar-text {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.user-bar-name {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.btn-logout {
+    padding: 5px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--ease);
+}
+
+.btn-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* ── LOGIN CARD ────────────────────────────────── */
+
+.login-card {
+    padding: 44px 40px 32px;
+    max-width: 420px;
+}
+
+.login-card .card-title {
+    font-size: 22px;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color var(--ease), box-shadow var(--ease);
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(232, 132, 26, 0.1);
+}
+
+.form-input::placeholder {
+    color: #c0c0c0;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: var(--orange);
+    border: none;
+    border-radius: var(--radius-xs);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    transition: all var(--ease);
+    margin-top: 4px;
+    letter-spacing: 0.1px;
+}
+
+.btn-login:hover {
+    background: var(--orange-hover);
+    box-shadow: 0 4px 14px rgba(232, 132, 26, 0.2);
+}
+
+.btn-login:active {
+    background: var(--orange-active);
+}
+
+.btn-login:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 18px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.members-note {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--ease);
+}
+
+.back-link:hover {
+    color: var(--orange);
+}
+
+/* ── FOOTER ────────────────────────────────────── */
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+}
+
+/* ── RESPONSIVE ────────────────────────────────── */
+
+@media (max-width: 540px) {
+    .topbar {
+        padding: 0 20px;
+        height: 60px;
+    }
+    .topbar-logo { height: 34px; }
+    .topbar-title { font-size: 17px; }
+    .page { padding: 32px 14px 24px; }
+    .card { padding: 32px 22px; }
+    .card-title { font-size: 20px; }
+    .login-card { padding: 32px 22px 24px; }
+    .login-card .card-title { font-size: 19px; }
+    .dl-btn { height: 48px; padding: 0 16px; gap: 12px; }
+    .dl-icon { width: 32px; height: 32px; border-radius: 7px; }
+    .dl-icon svg { width: 16px; height: 16px; }
+}
