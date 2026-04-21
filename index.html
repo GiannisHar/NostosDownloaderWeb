@@ -123,24 +123,16 @@ updateUI();
 function guardedDownload(platform) {
     var u = getUser();
     if (u) {
-        // Web app just opens in browser — no token needed
-        if (platform === "web") {
-            window.location.href = "https://nostos-web.vercel.app/";
-            return;
-        }
-        // Check we have a token
         if (!u.dl_token) {
             alert("Session expired. Please sign in again.");
             handleLogout();
             return;
         }
-        // Hit the secure server endpoint
         window.location.href = SERVER_URL + "/download/" + platform
             + "?id=" + encodeURIComponent(u.id)
             + "&session=" + encodeURIComponent(u.dl_token);
         return;
     }
-    // Not logged in — save which platform they wanted, then redirect to login
     sessionStorage.setItem("nostos_pending_download", platform);
     window.location.href = "login.html";
 }
